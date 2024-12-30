@@ -5,7 +5,9 @@ const app = express()
 const userRoutes = require('../users/routes/user.routes')
 const cookieParser = require('cookie-parser')
 const connect = require('./db/db')
+const rabbitMq = 
 connect()
+
 
 
 app.use(express.json())
