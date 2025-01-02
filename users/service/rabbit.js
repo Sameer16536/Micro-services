@@ -4,9 +4,20 @@ const RABBITMQ_URL = process.env.RABBITMQ_URL
 let connection,channel
 
 async function connect(){
-    connection = await amqp.connect(RABBITMQ_URL)
-    channel = await connection.createChannel()
-    console.log("Connected to RABBIT MQ")
+    try {
+        connection = await amqp.connect(RABBITMQ_URL)
+        channel = await connection.createChannel()
+        console.log("Connected to RABBIT MQ")
+        
+        // Handle connection closure
+        connection.on('close', (err) => {
+            console.error('RabbitMQ connection closed:', err);
+            setTimeout(connect, 5000); // Try to reconnect after 5 seconds
+        });
+    } catch (error) {
+        console.error('Error connecting to RabbitMQ:', error);
+        setTimeout(connect, 5000); // Try to reconnect after 5 seconds
+    }
 }
 
 async function subscribeToQueue(queueName,callback){
